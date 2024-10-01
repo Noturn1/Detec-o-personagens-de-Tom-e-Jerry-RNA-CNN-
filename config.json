@@ -1,0 +1,4 @@
+{
+    "train_data_dir": "/Users/arthurangelocencisilva/Programacao/detecta_tom_e_jerry/data", 
+    "img_size": [128, 128]
+}
