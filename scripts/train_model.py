@@ -7,7 +7,7 @@ import json
 import matplotlib as plt
 
 # Carrega as configs do projeto
-with open('/Users/arthurangelocencisilva/Programacao/detecta_tom_e_jerry/config.json') as config_file:
+with open('detecta_tom_e_jerry/config.json') as config_file:
     config = json.load(config_file)
     
 # Define as caminhos 
