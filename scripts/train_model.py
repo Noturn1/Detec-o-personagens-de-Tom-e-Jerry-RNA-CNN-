@@ -3,6 +3,9 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+import numpy as np
+
 import json
 import matplotlib as plt
 
@@ -15,8 +18,31 @@ train_data_dir = config["train_data_dir"]
 img_height, img_width = config["img_size"]
 batch_size = 32
 
+caminho_pasta = 'data/'
+# Função para carregar imagens e rótulos
+
+def carregar_imagens_e_rotulos(diretorio):
+    imagens = []
+    rotulos = []
+    classes = os.listdir(diretorio)
+    for classe in classes:
+        caminho_classe = os.path.join(diretorio, classe)
+        if os.path.isdir(caminho_classe):
+            for nome_arquivo in os.listdir(caminho_classe):
+                caminho_imagem = os.path.join(caminho_classe, nome_arquivo)
+                if os.path.isfile(caminho_imagem):
+                    img = load_img(caminho_imagem, target_size=(img_height, img_width))
+                    img_array = img_to_array(img)
+                    imagens.append(img_array)
+                    rotulos.append(classe)
+    return np.array(imagens), np.array(rotulos)
+
+# Carregar imagens e rótulos
+imagens, rotulos = carregar_imagens_e_rotulos(train_data_dir)
+
 # Data augmentation
 train_datagen = ImageDataGenerator(rescale = 1./255, validation_split = 0.2)
+test_datagen = ImageDataGenerator(rescale = 1./255)
 
 train_generator = train_datagen.flow_from_directory(
     train_data_dir,

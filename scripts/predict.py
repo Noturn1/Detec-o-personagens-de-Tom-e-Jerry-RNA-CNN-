@@ -36,12 +36,6 @@ def prever_personagem(caminho_imagem):
     
     return resultado
 
-
-'''if __name__ == "__main__":
-    caminho_imagem = 'detecta_tom_e_jerry/data/tom/frame15.jpg'
-    resultado = prever_personagem(caminho_imagem)
-    print(f"Personagem detectado: {resultado}")
-'''
 if __name__ == "__main__":
     pasta_imagens = 'data/tom_jerry_1'
     for nome_arquivo in os.listdir(pasta_imagens):
