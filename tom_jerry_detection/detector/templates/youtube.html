@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecção de Personagens - Tom e Jerry</title>
+    <style>
+        /* Estilo para sobrepor texto sobre o vídeo */
+        .video-container {
+            position: relative;
+            width: 640px; /* Ajuste o tamanho do vídeo conforme necessário */
+            margin: 0 auto;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detecção de Personagens - Tom e Jerry</h1>
+
+    <form id="video-form" method="POST">
+        {% csrf_token %}
+        <label for="video_url">URL do Vídeo no YouTube:</label>
+        <input type="text" name="video_url" id="video_url" required>
+        <button type="submit">Processar</button>
+    </form>
+
+    <div class="video-container">
+        <video id="video-player" controls>
+            Seu navegador não suporta a reprodução de vídeo.
+        </video>
+        <div id="prediction-overlay" class="video-overlay">Carregando predição...</div>
+    </div>
+
+    <script>
+        document.getElementById('video-form').onsubmit = function (e) {
+            e.preventDefault();
+
+            const videoUrl = document.getElementById('video_url').value;
+
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'video_url': videoUrl
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'processing') {
+                    // Carregar o vídeo no player
+                    const videoPlayer = document.getElementById('video-player');
+                    videoPlayer.src = `/media/${data.video_filename}`;  // Ajuste conforme a rota de arquivos estáticos
+                    videoPlayer.load();
+                    videoPlayer.play();
+
+                    // Atualizar predição sobre o vídeo a cada 1 segundo
+                    const predictionOverlay = document.getElementById('prediction-overlay');
+                    const updatePrediction = () => {
+                        fetch('/get-detected-character')  // Definir a rota correta para o endpoint da predição
+                        .then(response => response.json())
+                        .then(data => {
+                            predictionOverlay.textContent = `Personagem detectado: ${data.predicted_class}`;
+                        })
+                        .catch(error => console.error('Erro ao obter predição:', error));
+                    };
+
+                    // Atualiza a predição a cada 1 segundo
+                    setInterval(updatePrediction, 1000);
+                } else if (data.status === 'complete') {
+                    alert('Processamento completo!');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        };
+    </script>
+</body>
+</html>

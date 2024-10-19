@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecção de Personagens</title>
+</head>
+<body>
+    <h1>Detecção de Personagens de Tom e Jerry</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="image">Digite a URL do vídeo:</label>
+        <input type="text" name="video_url" id="video_url" required>
+        <button type="submit">Detectar</button>
+    </form>
+</body>
+</html>
