@@ -34,8 +34,13 @@
 
     <form id="video-form" method="POST">
         {% csrf_token %}
-        <label for="video_url">URL do Vídeo no YouTube:</label>
-        <input type="text" name="video_url" id="video_url" required>
+        <label for="video_filename">Escolha o Vídeo:</label>
+        <select name="video_filename" id="video_filename" required>
+            <option value="" disabled selected>Selecione um vídeo</option>
+            {% for video in videos %}
+                <option value="{{ video }}">{{ video }}</option>
+            {% endfor %}
+        </select>
         <button type="submit">Processar</button>
     </form>
 
@@ -45,51 +50,52 @@
         </video>
         <div id="prediction-overlay" class="video-overlay">Carregando predição...</div>
     </div>
-
     <script>
         document.getElementById('video-form').onsubmit = function (e) {
             e.preventDefault();
-
-            const videoUrl = document.getElementById('video_url').value;
-
-            fetch('', {
+    
+            const videoFilename = document.getElementById('video_filename').value;
+    
+            fetch('/start-video-processing/', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({
-                    'video_url': videoUrl
+                    'video_filename': videoFilename
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'processing') {
-                    // Carregar o vídeo no player
                     const videoPlayer = document.getElementById('video-player');
-                    videoPlayer.src = `/media/${data.video_filename}`;  // Ajuste conforme a rota de arquivos estáticos
+                    videoPlayer.src = `/media/${videoFilename}`;
                     videoPlayer.load();
                     videoPlayer.play();
-
-                    // Atualizar predição sobre o vídeo a cada 1 segundo
+    
                     const predictionOverlay = document.getElementById('prediction-overlay');
+    
+                    // A cada 1 segundo, pedir a próxima predição
                     const updatePrediction = () => {
-                        fetch('/get-detected-character')  // Definir a rota correta para o endpoint da predição
+                        fetch('/get-next-prediction/')
                         .then(response => response.json())
                         .then(data => {
-                            predictionOverlay.textContent = `Personagem detectado: ${data.predicted_class}`;
+                            if (data.status === 'complete') {
+                                predictionOverlay.textContent = 'Processamento concluído.';
+                                clearInterval(predictionInterval);  // Para de pedir predições
+                            } else {
+                                predictionOverlay.textContent = `Personagem detectado: ${data.predicted_class}`;
+                            }
                         })
                         .catch(error => console.error('Erro ao obter predição:', error));
                     };
-
-                    // Atualiza a predição a cada 1 segundo
-                    setInterval(updatePrediction, 1000);
-                } else if (data.status === 'complete') {
-                    alert('Processamento completo!');
+    
+                    const predictionInterval = setInterval(updatePrediction, 1000);  // Solicitar a cada 1 segundo
                 }
             })
-            .catch(error => console.error('Erro:', error));
+            .catch(error => console.error('Erro ao iniciar processamento:', error));
         };
-    </script>
+    </script>   
 </body>
 </html>
