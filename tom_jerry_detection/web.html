@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Imagem com Detecção de Personagem</title>
+    <style>
+        #imageDisplay {
+            width: 100%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload de Imagem com Detecção de Personagem</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <img id="imageDisplay" alt="Imagem carregada">
+    <p id="characterName">Personagem detectado: Nenhum</p>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const characterName = document.getElementById('characterName');
+
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const url = URL.createObjectURL(file);
+            imageDisplay.src = url;
+            // lugar para logica/integração da rede neural
+        });
+
+        // async function loadModel() {
+        //     // Carregar o modelo de rede neural
+        //     const model = await tf.loadGraphModel('URL_DO_MODELO');
+        //     return model;
+        // }
+
+        async function detectCharacters(imageElement, model) {
+            // Lógica para detectar personagens na imagem
+            // Exemplo: usar o modelo para fazer previsões na imagem
+            const detectedCharacter = "Personagem Exemplo"; // Substituir pela lógica 
+            characterName.textContent = `Personagem detectado: ${detectedCharacter}`;
+        }
+
+        // // Exemplo de uso
+        // loadModel().then(model => {
+        //     imageDisplay.addEventListener('load', () => {
+        //         detectCharacters(imageDisplay, model);
+        //     });
+        // });
+    </script>
+</body>
+</html>
