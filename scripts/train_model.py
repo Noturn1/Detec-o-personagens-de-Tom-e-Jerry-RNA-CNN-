@@ -1,5 +1,12 @@
 import os
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+import numpy as np
+
 import json
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
@@ -10,6 +17,8 @@ import matplotlib.pyplot as plt
 
 # Carregar as configs do projeto
 with open('/Users/arthurangelocencisilva/Programacao/detecta_tom_e_jerry/config.json') as config_file:
+# Carrega as configs do projeto
+with open('detecta_tom_e_jerry/config.json') as config_file:
     config = json.load(config_file)
 
 train_data_dir = config["train_data_dir"]
@@ -17,6 +26,9 @@ img_height, img_width = config["img_size"]
 batch_size = 32
 
 # Função para carregar imagens e rótulos
+caminho_pasta = 'data/'
+# Função para carregar imagens e rótulos
+
 def carregar_imagens_e_rotulos(diretorio):
     imagens = []
     rotulos = []
@@ -33,6 +45,15 @@ def carregar_imagens_e_rotulos(diretorio):
                     imagens.append(img_array)
                     rotulos.append(class_indices[classe])
     return np.array(imagens), np.array(rotulos)
+                    rotulos.append(classe)
+    return np.array(imagens), np.array(rotulos)
+
+# Carregar imagens e rótulos
+imagens, rotulos = carregar_imagens_e_rotulos(train_data_dir)
+
+# Data augmentation
+train_datagen = ImageDataGenerator(rescale = 1./255, validation_split = 0.2)
+test_datagen = ImageDataGenerator(rescale = 1./255)
 
 # Carregar imagens e rótulos
 imagens, rotulos = carregar_imagens_e_rotulos(train_data_dir)

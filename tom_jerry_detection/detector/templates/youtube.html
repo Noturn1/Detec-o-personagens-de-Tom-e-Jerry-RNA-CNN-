@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecção de Personagens - Tom e Jerry</title>
+    <style>
+        .image-container {
+            text-align: center;
+            margin: 20px auto;
+        }
+
+        .image-overlay {
+            margin-top: 10px;
+            color: white;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detecção de Personagens - Tom e Jerry</h1>
+
+    <form id="image-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="image_file">Escolha a Imagem:</label>
+        <input type="file" name="image_file" id="image_file" accept="image/*" required>
+        <button type="submit">Processar</button>
+    </form>
+
+    <div class="image-container">
+        <img id="image-display" src="" alt="Imagem selecionada">
+        <div id="prediction-overlay" class="image-overlay">Carregando predição...</div>
+    </div>
+
+    <script>
+        document.getElementById('image_file').onchange = function (e) {
+            const imageFile = e.target.files[0];
+            const imageDisplay = document.getElementById('image-display');
+            imageDisplay.src = URL.createObjectURL(imageFile);
+            imageDisplay.onload = () => URL.revokeObjectURL(imageDisplay.src);
+        };
+
+        document.getElementById('image-form').onsubmit = function (e) {
+            e.preventDefault();
+
+            const imageFile = document.getElementById('image_file').files[0];
+            const formData = new FormData();
+            formData.append('image_file', imageFile);
+
+            fetch('/start-image-processing/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'processing') {
+                    const predictionOverlay = document.getElementById('prediction-overlay');
+
+                    // A cada 1 segundo, pedir a próxima predição
+                    const updatePrediction = () => {
+                        fetch('/get-next-prediction/')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'complete') {
+                                predictionOverlay.textContent = `Personagem detectado: ${data.predicted_class}`;
+                                clearInterval(predictionInterval);  // Para de pedir predições
+                            } else {
+                                predictionOverlay.textContent = 'Carregando predição...';
+                            }
+                        })
+                        .catch(error => console.error('Erro ao obter predição:', error));
+                    };
+
+                    const predictionInterval = setInterval(updatePrediction, 1000);  // Solicitar a cada 1 segundo
+                }
+            })
+            .catch(error => console.error('Erro ao iniciar processamento:', error));
+        };
+    </script>
+</body>
+</html>
