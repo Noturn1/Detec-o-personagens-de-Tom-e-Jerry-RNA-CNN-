@@ -1,4 +1,5 @@
 tensorflow==2.17.0
 numpy==1.26.4
 django==3.2.9
-opencv-python==4.10.0
+opencv-python==4.10.0.82
+scikit-learn==1.0.1
