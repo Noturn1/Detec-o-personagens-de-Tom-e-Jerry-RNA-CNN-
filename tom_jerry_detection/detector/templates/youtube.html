@@ -91,7 +91,7 @@
                         .catch(error => console.error('Erro ao obter predição:', error));
                     };
     
-                    const predictionInterval = setInterval(updatePrediction, 1000);  // Solicitar a cada 1 segundo
+                    const predictionInterval = setInterval(updatePrediction, 100);  // Solicitar a cada 1 segundo
                 }
             })
             .catch(error => console.error('Erro ao iniciar processamento:', error));
