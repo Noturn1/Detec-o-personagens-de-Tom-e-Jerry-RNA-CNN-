@@ -66,15 +66,17 @@ validation_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size)
 # Função para criar o modelo com taxa de aprendizagem ajustável
 def criar_modelo(learning_rate=0.001):
     model = Sequential([
-        Conv2D(32, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)),
+        Conv2D(16, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)),
+        MaxPooling2D((2, 2)),
+        Conv2D(32, (3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
         Conv2D(64, (3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
-        Conv2D(128, (3, 3), activation='relu'),
-        MaxPooling2D((2, 2)),
         Flatten(),
-        Dense(512, activation='relu'),
-        Dense(num_classes, activation='softmax')  # Número de classes
+        Dropout(0.5),
+        Dense(128, activation='relu'),
+        Dense(num_classes, activation='softmax'),  # Número de classes
+        
     ])
     
     # Configurando o otimizador com a taxa de aprendizagem
@@ -82,7 +84,7 @@ def criar_modelo(learning_rate=0.001):
     
     # Compilando o modelo
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
-    
+    model.summary()
     return model
 
 # Treinando o modelo
@@ -94,7 +96,7 @@ history = modelo.fit(
 )
 
 # Salvando o modelo treinado
-modelo.save('cnn_model4.h5')
+modelo.save('teste4.h5')
 
 # Plotar a precisão e a perda
 acc = history.history['accuracy']
