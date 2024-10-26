@@ -10,10 +10,10 @@ from tensorflow.keras.utils import to_categorical
 import json
 import matplotlib.pyplot as plt
 
-# Obtenha o caminho absoluto para o arquivo de configuração
+# Obtem o caminho do arquivo de configurações
 config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../config.json'))
 
-# Carregar as configs do projeto
+# Carrega as configs do projeto
 with open(config_path) as config_file:
     config = json.load(config_file)
 
@@ -21,7 +21,7 @@ train_data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dat
 img_height, img_width = config["img_size"]
 batch_size = 32
 
-# Função para carregar imagens e rótulos
+# carrega imagens e rótulos
 def carregar_imagens_e_rotulos(diretorio):
     imagens = []
     rotulos = []
@@ -39,21 +39,21 @@ def carregar_imagens_e_rotulos(diretorio):
                     rotulos.append(class_indices[classe])
     return np.array(imagens), np.array(rotulos)
 
-# Carregar imagens e rótulos
+# Carrega imagens e rótulos
 imagens, rotulos = carregar_imagens_e_rotulos(train_data_dir)
 
-# Verificar os rótulos
+# Verifica os rótulos
 num_classes = len(np.unique(rotulos))
 print(f"Número de classes: {num_classes}")
 print(f"Rótulos únicos: {np.unique(rotulos)}")
 
-# Ajustar os rótulos para garantir que estão no intervalo correto
-rotulos = np.where(rotulos == 4, 1, rotulos)  # Ajustar o rótulo 4 para 1
+# Ajusta os rótulos para garantir que estão no intervalo correto
+rotulos = np.where(rotulos == 4, 1, rotulos) 
 
-# Dividir os dados em conjuntos de treinamento e teste
+# Dividi os dados em treinamento e teste
 X_train, X_test, y_train, y_test = train_test_split(imagens, rotulos, test_size=0.2, random_state=42)
 
-# Codificar os rótulos como categorias
+# Codifica os rótulos como categorias
 y_train = to_categorical(y_train, num_classes=num_classes)
 y_test = to_categorical(y_test, num_classes=num_classes)
 
@@ -63,7 +63,7 @@ test_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size)
 validation_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size)
 
-# Função para criar o modelo com taxa de aprendizagem ajustável
+# Cria o modelo com taxa de aprendizagem ajustável
 def criar_modelo(learning_rate=0.001):
     model = Sequential([
         Conv2D(16, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)),
@@ -79,15 +79,15 @@ def criar_modelo(learning_rate=0.001):
         
     ])
     
-    # Configurando o otimizador com a taxa de aprendizagem
+    # Configura o otimizador com a taxa de aprendizagem
     optimizer = Adam(learning_rate=learning_rate)
     
-    # Compilando o modelo
+    # Compila o modelo
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()
     return model
 
-# Treinando o modelo
+# Treina o modelo
 modelo = criar_modelo(learning_rate=0.001)
 history = modelo.fit(
     train_generator,
@@ -95,10 +95,10 @@ history = modelo.fit(
     validation_data=validation_generator
 )
 
-# Salvando o modelo treinado
+# Salvan o modelo treinado
 modelo.save('teste4.h5')
 
-# Plotar a precisão e a perda
+# Plota a precisão e a perda
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
 loss = history.history['loss']
