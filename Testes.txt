@@ -1,0 +1,64 @@
+
+Foram realizados testes no train_model_1 e train_model_2, mas eles não foram nem um pouco eficazes. 
+
+
+Foram feitos 4 diferentes testes para o train_model_3, mesmo com altas acurácias, os personagens não foram classificados corretamente. 
+Os testes feitos foram:
+
+
+Teste 1:
+Camadas:
+Convolucionais: 3 camadas (32, 64, 128 filtros), Relu como ativação
+Pooling: 3 camadas tamanho (2,2)  
+Achatamento: 1 camada 
+Densa: 2 camadas (512 filtros), Softmax como ativação
+Otimizador: Adam
+Taxa de aprendizado: 0.001
+Dropout: 0.5
+Épocas: 10
+Acurácia: 0,9734 (128x128)  0,9708 (256x256)
+
+Teste 2:
+Camadas:
+Convolucionais: 3 camadas (16, 32, 64 filtros), Relu como ativação
+Pooling: 3 camadas tamanho (2,2)  
+Achatamento: 1 camada 
+Densa: 2 camadas (128 filtros), Softmax como ativação
+Otimizador: Adam
+Taxa de aprendizado: 0.01
+Dropout: 0.5
+Épocas: 10
+Acurácia: 0,3804 (128x128), 0,7613 (256x256)
+
+Teste 3:
+Camadas:
+Convolucionais: 3 camadas (32, 64, 128 filtros), Relu como ativação
+Pooling: 3 camadas tamanho (2,2)  
+Achatamento: 1 camada 
+Densa: 2 camadas (512 filtros), Softmax como ativação
+Otimizador: Adam
+Taxa de aprendizado: 0.01
+Dropout: 0.5
+Épocas: 10
+Acurácia: 0.9564 (128x128), 0,9649 (256x256)
+
+Teste 4:
+Camadas:
+Convolucionais: 3 camadas (16, 32, 64 filtros), Relu como ativação
+Pooling: 3 camadas tamanho (2,2)  
+Achatamento: 1 camada 
+Densa: 2 camadas (128 filtros), Softmax como ativação
+Otimizador: Adam
+Taxa de aprendizado: 0.001
+dropout: 0.5
+Épocas: 10
+Acurácia:  (0,9546 para 128x128) (0,9580 para 256x256) 
+
+
+Portanto, foi feita uma nova versão train_model_4 com a utilização de uma função que ajusta a taxa de aprendizagem e com a utilização do batch normalization, afim de 
+melhorar a performance do modelo.
+
+
+
+
+   

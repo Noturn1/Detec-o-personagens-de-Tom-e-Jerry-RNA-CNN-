@@ -17,7 +17,7 @@ train_data_dir = config["train_data_dir"]
 img_height, img_width = config["img_size"]
 batch_size = 32
 
-# Função para carregar imagens e rótulos
+# Carrega imagens e rotulos
 def carregar_imagens_e_rotulos(diretorio):
     imagens = []
     rotulos = []
@@ -45,7 +45,7 @@ imagens, rotulos = carregar_imagens_e_rotulos(train_data_dir)
 train_datagen = ImageDataGenerator(rescale = 1./255, validation_split = 0.2)
 test_datagen = ImageDataGenerator(rescale = 1./255)
 
-# Dividir os dados em conjuntos de treinamento e teste
+# Divide os dados entre treinamento e testes
 X_train, X_test, y_train, y_test = train_test_split(imagens, rotulos, test_size=0.2, random_state=42)
 
 # Codificar os rótulos como categorias

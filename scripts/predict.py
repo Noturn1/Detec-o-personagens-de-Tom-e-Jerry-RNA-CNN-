@@ -4,13 +4,13 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 import json
 
-# Carregar configs do projeto
+# Carrega as configurações do projeto
 with open('config.json') as config_file:
     config = json.load(config_file)
     
 img_height, img_width = config["img_size"]
 
-# Função para carregar e preparar imagem 
+# Carrega e prepara a imagem 
 def carregar_imagem(caminho_imagem):
     img = image.load_img(caminho_imagem, target_size = (img_height, img_width))
     img_array = image.img_to_array(img) / 255
@@ -18,11 +18,11 @@ def carregar_imagem(caminho_imagem):
     
     return img_array
 
-# Carregar modelo treinado
+# Carrega o modelo treinado
 modelo = tf.keras.models.load_model('models/cnn_model.h5')
 modelo.compile()
 
-# Funcão para fazer a predição
+# Faz a predição
 def prever_personagem(caminho_imagem):
     img_array = carregar_imagem(caminho_imagem)
     print(f"Imagem carregada: {caminho_imagem}")
