@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 import logging
 
 # Carregar o modelo de Machine Learning
-model = load_model('../models/teste1_128_new.h5')
+model = load_model('../models/teste4-20epoch.h5')
 
 logging.basicConfig(level=logging.DEBUG)
 

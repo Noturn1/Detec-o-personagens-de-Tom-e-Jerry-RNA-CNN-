@@ -85,9 +85,12 @@ def criar_modelo(learning_rate=0.001):
         Conv2D(128, (3, 3), activation='relu'),
         BatchNormalization(),
         MaxPooling2D((2, 2)),
+        Conv2D(256, (3, 3), activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D((2, 2)),
         Flatten(),
         Dropout(0.5),
-        Dense(256, activation='relu'),
+        Dense(512, activation='relu'),
         Dropout(0.5),
         Dense(num_classes, activation='softmax'),  # Número de classes
     ])
@@ -108,13 +111,13 @@ def scheduler(epoch, lr):
     if epoch < 10:
         return lr
     else:
-        return lr * tf.math.exp(-0.1)
+        return float(lr * tf.math.exp(-0.1))
 
 # Treinando o modelo
 modelo = criar_modelo(learning_rate=0.001)
 history = modelo.fit(
     train_generator,
-    epochs=5,
+    epochs=150,  # Increase the number of epochs
     validation_data=validation_generator,
     callbacks=[LearningRateScheduler(scheduler)]
 )
