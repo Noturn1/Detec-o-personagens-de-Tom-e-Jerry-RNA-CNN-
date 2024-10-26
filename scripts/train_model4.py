@@ -2,11 +2,12 @@ import os
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.callbacks import LearningRateScheduler
 import json
 import matplotlib.pyplot as plt
 
@@ -57,7 +58,16 @@ X_train, X_test, y_train, y_test = train_test_split(imagens, rotulos, test_size=
 y_train = to_categorical(y_train, num_classes=num_classes)
 y_test = to_categorical(y_test, num_classes=num_classes)
 
-train_datagen = ImageDataGenerator(rescale=1./255)
+train_datagen = ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size)
@@ -66,33 +76,47 @@ validation_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size)
 # Função para criar o modelo com taxa de aprendizagem ajustável
 def criar_modelo(learning_rate=0.001):
     model = Sequential([
-        Conv2D(16, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)),
-        MaxPooling2D((2, 2)),
-        Conv2D(32, (3, 3), activation='relu'),
+        Conv2D(32, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)),
+        BatchNormalization(),
         MaxPooling2D((2, 2)),
         Conv2D(64, (3, 3), activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D((2, 2)),
+        Conv2D(128, (3, 3), activation='relu'),
+        BatchNormalization(),
         MaxPooling2D((2, 2)),
         Flatten(),
         Dropout(0.5),
-        Dense(128, activation='relu'),
+        Dense(256, activation='relu'),
+        Dropout(0.5),
         Dense(num_classes, activation='softmax'),  # Número de classes
-        
     ])
     
     # Configurando o otimizador com a taxa de aprendizagem
     optimizer = Adam(learning_rate=learning_rate)
     
     # Compilando o modelo
-    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=optimizer,
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    
     model.summary()
     return model
+
+# Função para ajustar a taxa de aprendizagem
+def scheduler(epoch, lr):
+    if epoch < 10:
+        return lr
+    else:
+        return lr * tf.math.exp(-0.1)
 
 # Treinando o modelo
 modelo = criar_modelo(learning_rate=0.001)
 history = modelo.fit(
     train_generator,
-    epochs=10,
-    validation_data=validation_generator
+    epochs=5,
+    validation_data=validation_generator,
+    callbacks=[LearningRateScheduler(scheduler)]
 )
 
 # Salvando o modelo treinado
