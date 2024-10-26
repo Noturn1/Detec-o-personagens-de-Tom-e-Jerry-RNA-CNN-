@@ -17,13 +17,20 @@ Este projeto implementa uma rede neural convolucional (CNN) para detectar se uma
     ```
 2. Treine o modelo:
     ```bash
-    python scripts/train_model.py
+    python scripts/train_model'.py
     ```
 3. Faça predições em novas imagens:
     ```bash
     python scripts/predict.py
     ```
+4. Execute a aplicação web:
+   ```bash
+    python tom_jerry_detection/manage.py runserver
+    ```
 
 ## Dependências:
 - TensorFlow
 - NumPy
+- Django
+- Opencv-python
+- scikit-learn
