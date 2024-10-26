@@ -34,7 +34,7 @@ for i, (images, labels) in enumerate(train_ds.take(1)):
         plt.axis("off")
 plt.show()
 
-# Number of classes
+# Definição de classes
 num_classes = len(set(label for _, labels in train_ds for label in labels.numpy()))
 print("Number of Classes:", num_classes)
 
@@ -45,8 +45,7 @@ label_categories = {
     3: "Both"
 }
 
-#CNN model arquitecture
-# CNN model architecture
+# Modelo de rede 
 cnn_model = Sequential([
     layers.Input(shape=(img_height, img_width, 3)),
     layers.Rescaling(1./255),
@@ -65,7 +64,7 @@ cnn_model.compile(optimizer='adam',
                   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
 
-# Traininig the model
+#Treina o modelo
 epochs = 10
 history = cnn_model.fit(
     train_ds,
@@ -75,8 +74,7 @@ history = cnn_model.fit(
 cnn_model.summary()
 cnn_model.save("models/cnn_model2.h5")
 
-# Plotting the training history
-# accuracy and loss
+# Plota acuracia e perda
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
 loss = history.history['loss']
@@ -85,19 +83,19 @@ epochs_range = range(epochs)
 
 plt.figure(figsize=(6, 6))
 plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.plot(epochs_range, acc, label='Acurácia de treinamento')
+plt.plot(epochs_range, val_acc, label='Acurácia de validação')
 plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
+plt.title('Acurácia de treinamento e validação')
 
 plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.plot(epochs_range, loss, label='Perda de treinamento')
+plt.plot(epochs_range, val_loss, label='Perda de validação')
 plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
+plt.title('Perda de treinamento e validação')
 plt.show()
 
-# Predicting one image from the validation dataset
+# prediz uma imagem do dataset de validação
 plt.figure(figsize=(6, 3))  
 for images, labels in val_ds.take(1):
     sample_image = images[0]
